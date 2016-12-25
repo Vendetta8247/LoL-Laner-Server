@@ -25,7 +25,7 @@ app.get("/summoner/by-name/:name", function(req, res)
   if (err) throw err;
 
   client
-    .query('INSERT INTO summoners (name, lolid) VALUES (\'' + summoner.name + '\',\'' + summoner.id + '\');')
+    .query('INSERT INTO summoners (name, lolid) VALUES (\'' + summoner.name + '\',\'' + summoner.id + '\') ON CONFLICT (lolid) DO NOTHING;')
 });
 	});
 });
