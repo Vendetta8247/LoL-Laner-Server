@@ -8,7 +8,16 @@ app.get("/summoner/by-name/:name", function(req, res)
 	request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
 		res.send(body);
 	});
-})
+});
+
+app.get("/summoner/current-game/:id", function (req, res)
+{
+	request('https://euw.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/'+req.params.id +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function(error, response, body)
+	{
+		res.send(body);
+	});
+});
+
 
 var server = app.listen(process.env.PORT || 5000, function () {
 
