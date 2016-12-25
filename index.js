@@ -1,7 +1,19 @@
 var request = require('request');
 var express = require('express');
 var app = express();
+var pg = require('pg');
 
+pg.defaults.ssl = true;
+pg.connect('postgres://ghayeuqwyzrpmo:00b2c093f9a39de5414d3a961fe98ba506e009b5fa342dfd3e6a39db58d6e758@ec2-54-75-231-195.eu-west-1.compute.amazonaws.com:5432/d8apki7pn59v74', function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
+
+  client
+    .query('SELECT * FROM summoners;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
 
 app.get("/summoner/by-name/:name", function(req, res)
 {
