@@ -28,6 +28,7 @@ app.get("/summoner/by-name/:name", function(req, res)
     .query('INSERT INTO summoners (name, lolid) VALUES (\'' + summoner.name + '\',\'' + summoner.id + '\') ON CONFLICT (lolid) DO NOTHING;')
 });
 	});
+	console.log('added' + summoner.name + 'to database');
 });
 
 app.get("/summoner/current-game/:id", function (req, res)
