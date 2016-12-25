@@ -2,14 +2,14 @@ var request = require('request');
 var express = require('express');
 var app = express();
 var pg = require('pg');
+var dbUrl = 'postgres://ghayeuqwyzrpmo:00b2c093f9a39de5414d3a961fe98ba506e009b5fa342dfd3e6a39db58d6e758@ec2-54-75-231-195.eu-west-1.compute.amazonaws.com:5432/d8apki7pn59v74';
 
 pg.defaults.ssl = true;
-pg.connect('postgres://ghayeuqwyzrpmo:00b2c093f9a39de5414d3a961fe98ba506e009b5fa342dfd3e6a39db58d6e758@ec2-54-75-231-195.eu-west-1.compute.amazonaws.com:5432/d8apki7pn59v74', function(err, client) {
+pg.connect(dbUrl, function(err, client) {
   if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
 
   client
-    .query('SELECT * FROM summoners;')
+    .query('SELECT lolid FROM summoners;')
     .on('row', function(row) {
       console.log(JSON.stringify(row));
     });
@@ -19,6 +19,17 @@ app.get("/summoner/by-name/:name", function(req, res)
 {
 	request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
 		res.send(body);
+		var data = JSON.parse(body);
+		var summoner = data[Object.keys(data)[0]];
+		pg.connect(dbUrl, function(err, client) {
+  if (err) throw err;
+
+  client
+    .query('INSERT INTO summoners (name, lolid) VALUES (' + summoner.name + ',' + summoner.id + ') ON CONFLICT (lolid) DO NOTHING;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
 	});
 });
 
