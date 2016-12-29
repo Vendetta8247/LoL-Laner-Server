@@ -57,6 +57,15 @@ app.get("/summoner/by-name/:name", function(req, res)
 
 });
 
+app.get("/summoner/all", function(req,res)
+{
+	client.query("SELECT * from summoners;")
+	.on('row', function(row)
+	{
+		console.log(JSON.stringify(row));
+	})
+});
+
 app.get("/summoner/current-game/:id", function (req, res)
 {
 	request('https://euw.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/'+req.params.id +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function(error, response, body)
