@@ -44,6 +44,7 @@ app.get("/summoner/by-name/:name", function(req, res)
 		
 					console.log('Added ' + Object.keys(data)[0] + ' to database');
 				}
+				else res.sendStatus(response.statusCode);
 			});
 		}
 		else
