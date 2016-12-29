@@ -1,0 +1,1 @@
+create table summoners (id serial primary key, name text, lolid text unique, summonername text);

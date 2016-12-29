@@ -9,26 +9,51 @@ pg.connect(dbUrl, function(err, client) {
   if (err) throw err;
 
   client
-    .query('SELECT lolid FROM summoners;')
+    .query('SELECT id FROM summoners;')
     .on('row', function(row) {
       console.log(JSON.stringify(row));
     });
-});
+
 
 app.get("/summoner/by-name/:name", function(req, res)
 {
-	request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
-		res.send(body);
-		var data = JSON.parse(body);
-		var summoner = data[Object.keys(data)[0]];
-		pg.connect(dbUrl, function(err, client) {
-  if (err) throw err;
+	client
+	.query('SELECT * FROM summoners where summonername=\'' + req.params.name.toLowerCase().replace(/\s/g,'') + '\'', function(error, result)
+	{
+		console.log(JSON.stringify(result.rows[0]));
+		if(result.rowCount == 0)
+		{
+			request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
+				//res.send(body);
+				var data = JSON.parse(body);
+				var summoner = data[Object.keys(data)[0]];
+				
+				if(response.statusCode == 200)
+				{
 
-  client
-    .query('INSERT INTO summoners (name, lolid) VALUES (\'' + summoner.name + '\',\'' + summoner.id + '\') ON CONFLICT (lolid) DO NOTHING;')
-});
-		console.log('added' + summoner.name + 'to database');
+					var jsonResponse = new Object();
+					
+					jsonResponse.id = summoner.id;
+					jsonResponse.name = summoner.name;
+					jsonResponse.summonername = Object.keys(data)[0];
+
+					res.send(JSON.stringify(jsonResponse));
+		
+  					client
+    				.query('INSERT INTO summoners (name, id, summonername) VALUES (\'' + summoner.name + '\',\'' + parseInt(summoner.id) + '\',\''+ Object.keys(data)[0] + '\') ON CONFLICT (id) DO NOTHING;');
+		
+					console.log('Added ' + Object.keys(data)[0] + ' to database');
+				}
+			});
+		}
+		else
+		{
+			res.send(JSON.stringify(result.rows[0]));
+		}
 	});
+
+
+
 
 });
 
@@ -39,7 +64,7 @@ app.get("/summoner/current-game/:id", function (req, res)
 		res.send(body);
 	});
 });
-
+});
 
 var server = app.listen(process.env.PORT || 5000, function () {
 
