@@ -62,7 +62,7 @@ app.get("/summoner/all", function(req,res)
 	client.query("SELECT * from summoners;")
 	.on('row', function(row)
 	{
-		console.log(JSON.stringify(row));
+		res.send(JSON.stringify(row));
 	})
 });
 
