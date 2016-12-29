@@ -60,10 +60,13 @@ app.get("/summoner/by-name/:name", function(req, res)
 app.get("/summoner/all", function(req,res)
 {
 	client.query("SELECT * from summoners;")
-	.on('row', function(row)
-	{
-		res.send(JSON.stringify(row));
-	})
+	.on('row', function(row, result) {
+      result.addRow(row);
+    })
+    .on('end', function(result) {
+      res.send(JSON.stringify(result.rows));
+    });
+
 });
 
 app.get("/summoner/current-game/:id", function (req, res)
