@@ -17,6 +17,8 @@ pg.connect(dbUrl, function(err, client) {
 
 app.get("/summoner/by-name/:name", function(req, res)
 {
+	if(req.query.force == 'true')
+	console.log("Force update = " + req.query.force);
 	client
 	.query('SELECT * FROM summoners where summonername=\'' + req.params.name.toLowerCase().replace(/\s/g,'') + '\'', function(error, result)
 	{
@@ -40,7 +42,7 @@ app.get("/summoner/by-name/:name", function(req, res)
 					res.send(JSON.stringify(jsonResponse));
 		
   					client
-    				.query('INSERT INTO summoners (name, id, summonername) VALUES (\'' + summoner.name + '\',\'' + parseInt(summoner.id) + '\',\''+ Object.keys(data)[0] + '\') ON CONFLICT (id) DO NOTHING;');
+    				.query('INSERT INTO summoners (name, id, summonername) VALUES (\'' + summoner.name + '\',\'' + parseInt(summoner.id) + '\',\''+ Object.keys(data)[0] + '\') ON CONFLICT (id) DO UPDATE SET name=\''+summoner.name+'\', summonername=\''+Object.keys(data)[0]+'\';');
 		
 					console.log('Added ' + Object.keys(data)[0] + ' to database');
 				}
