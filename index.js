@@ -25,12 +25,24 @@ app.get("/summoner/by-name/:name", function(req, res)
 		console.log(JSON.stringify(result.rows[0]));
 		if(result.rowCount == 0)
 		{
+			function getSummonerId()
+			{
 			request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
 				//res.send(body);
 				var data = JSON.parse(body);
 				var summoner = data[Object.keys(data)[0]];
+
+				if (response.statusCode == 429) 
+				{
+					console.log("Waiting for 5000 ms in getSummonerId");
+					setTimeout(function()
+					{
+						console.log("5000 ms passed");
+						getSummonerId();
+					},5000);
+				}
 				
-				if(response.statusCode == 200)
+				else if(response.statusCode == 200)
 				{
 
 					var jsonResponse = new Object();
@@ -46,17 +58,35 @@ app.get("/summoner/by-name/:name", function(req, res)
 		
 					console.log('Added ' + Object.keys(data)[0] + ' to database');
 				}
+
 				else res.sendStatus(response.statusCode);
-			});
+				
+				});
+			}
 		}
 		else
 		{
 			res.send(JSON.stringify(result.rows[0]));
 		}
+		getSummonerId();
+
 	});
 
 
 
+
+});
+
+
+
+
+app.get("/stats/ranked/:idArray", function(req, res)
+{
+	var array = req.params.idArray.split(',');
+	for(i = 0; i<array.length; i++)
+	{
+		console.log(array[i]);
+	}
 
 });
 
@@ -72,13 +102,38 @@ app.get("/summoner/all", function(req,res)
 
 });
 
-app.get("/summoner/current-game/:id", function (req, res)
+app.get("/current-game/:id", function (req, res)
 {
+	function getCurrentGame()
+	{	
 	request('https://euw.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/'+req.params.id +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function(error, response, body)
 	{
-		res.send(body);
+		if(response.statusCode==429)
+		{
+			console.log("Waiting for 5000 ms in getCurrentGame");
+			setTimeout(function()
+			{
+				console.log("5000 ms passed");
+				getCurrentGame();
+			},5000);
+		}
+		else
+		{
+		res.write(body);
+		res.end();
+		}
+	console.log(error);
 	});
+	}
+	getCurrentGame();
 });
+
+
+
+app.get('')
+
+
+
 });
 
 var server = app.listen(process.env.PORT || 5000, function () {
