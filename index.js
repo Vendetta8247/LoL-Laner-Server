@@ -3,6 +3,7 @@ var express = require('express');
 var app = express();
 var pg = require('pg');
 var dbUrl = 'postgres://ghayeuqwyzrpmo:00b2c093f9a39de5414d3a961fe98ba506e009b5fa342dfd3e6a39db58d6e758@ec2-54-75-231-195.eu-west-1.compute.amazonaws.com:5432/d8apki7pn59v74';
+var API_KEY = 'RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60';
 
 pg.defaults.ssl = true;
 pg.connect(dbUrl, function(err, client) {
@@ -27,7 +28,7 @@ app.get("/summoner/by-name/:name", function(req, res)
 		{
 			function getSummonerId()
 			{
-			request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
+			request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key='+ API_KEY, function (error, response, body) {
 				//res.send(body);
 				var data = JSON.parse(body);
 				var summoner = data[Object.keys(data)[0]];
@@ -63,12 +64,13 @@ app.get("/summoner/by-name/:name", function(req, res)
 				
 				});
 			}
+			getSummonerId();
 		}
 		else
 		{
 			res.send(JSON.stringify(result.rows[0]));
 		}
-		getSummonerId();
+
 
 	});
 
@@ -83,9 +85,48 @@ app.get("/summoner/by-name/:name", function(req, res)
 app.get("/stats/ranked/:idArray", function(req, res)
 {
 	var array = req.params.idArray.split(',');
+	var responseArray = [];
+	console.log(responseArray[0])
 	for(i = 0; i<array.length; i++)
 	{
 		console.log(array[i]);
+		getLeagueStats(array[i]);
+
+	}
+
+	function getLeagueStats(id)
+	{
+		request('https://euw.api.pvp.net/api/lol/euw/v1.3/stats/by-summoner/' + id + '/ranked?season=SEASON2017&api_key=' + API_KEY, function(error, response, body)
+		{
+			if(response.statusCode==429)
+			{
+				console.log("Waiting for 5000 ms in getLeagueStats");
+				setTimeout(function()
+				{
+					console.log("5000 ms passed");
+					getLeagueStats(id);
+				},5000);
+			}
+			else
+			{
+				var data = JSON.parse(body);
+				var toReturn = new Object();
+				toReturn.id = id;
+				toReturn.champions = data.champions;
+				responseArray.push(toReturn);
+				//res.write(JSON.stringify(responseArray[responseArray.length-1]) + ',\n\n\n');
+				if(responseArray.length==array.length)
+				{
+					for(var i = 0; i<responseArray.length; i++)
+					{
+						res.write(JSON.stringify(responseArray[i]) + ',\n\n');
+					}
+					res.end();
+				}
+
+			}
+			console.log(error);
+		});
 	}
 
 });
@@ -106,7 +147,7 @@ app.get("/current-game/:id", function (req, res)
 {
 	function getCurrentGame()
 	{	
-	request('https://euw.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/'+req.params.id +'?api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function(error, response, body)
+	request('https://euw.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/EUW1/'+req.params.id +'?api_key=' + API_KEY, function(error, response, body)
 	{
 		if(response.statusCode==429)
 		{
@@ -138,8 +179,8 @@ app.get('')
 
 var server = app.listen(process.env.PORT || 5000, function () {
 
-  var host = server.address().address
-  var port = server.address().port
+  var host = server.address().adress;
+  var port = server.address().port;
   console.log("Example app listening at http://%s:%s", host, port)
 
 })
