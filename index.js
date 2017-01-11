@@ -84,6 +84,7 @@ app.get("/summoner/by-name/:name", function(req, res)
 
 app.get("/stats/ranked/:idArray", function(req, res)
 {
+	var season =  req.query.season || 'SEASON2017';
 	var array = req.params.idArray.split(',');
 	var responseArray = [];
 	console.log(responseArray[0])
@@ -96,7 +97,7 @@ app.get("/stats/ranked/:idArray", function(req, res)
 
 	function getLeagueStats(id)
 	{
-		request('https://euw.api.pvp.net/api/lol/euw/v1.3/stats/by-summoner/' + id + '/ranked?season=SEASON2017&api_key=' + API_KEY, function(error, response, body)
+		request('https://euw.api.pvp.net/api/lol/euw/v1.3/stats/by-summoner/' + id + '/ranked?season='+ season + '&api_key=' + API_KEY, function(error, response, body)
 		{
 			if(response.statusCode==429)
 			{
@@ -171,8 +172,30 @@ app.get("/current-game/:id", function (req, res)
 
 
 
-app.get('')
-
+app.get('/summoner/league/entry/:idArray',function (req,res) {
+	function getLeagueEntry()
+	{
+		request('https://euw.api.pvp.net/api/lol/euw/v2.5/league/by-summoner/'+ req.params.idArray + '/entry?api_key=' + API_KEY, function(error, response, body)
+		{
+			if(response.statusCode==429)
+			{
+				console.log("Waiting for 5000 ms in getLeagueEntry");
+				setTimeout(function()
+				{
+					console.log("5000 ms passed");
+					getLeagueEntry();
+				},5000);
+			}
+			else
+			{
+				res.write(body);
+				res.end();
+			}
+			console.log(error);
+		});
+	}
+	getLeagueEntry();
+});
 
 
 });
