@@ -87,6 +87,8 @@ app.get("/stats/ranked/:idArray", function(req, res)
 	var season =  req.query.season || 'SEASON2017';
 	var array = req.params.idArray.split(',');
 	var responseArray = [];
+	var responseToWrite =new Object();
+	responseToWrite.answer ="";
 	console.log(responseArray[0])
 	for(i = 0; i<array.length; i++)
 	{
@@ -115,13 +117,11 @@ app.get("/stats/ranked/:idArray", function(req, res)
 				toReturn.id = id;
 				toReturn.champions = data.champions;
 				responseArray.push(toReturn);
+				responseToWrite.answer = responseArray;
 				//res.write(JSON.stringify(responseArray[responseArray.length-1]) + ',\n\n\n');
 				if(responseArray.length==array.length)
 				{
-					for(var i = 0; i<responseArray.length; i++)
-					{
-						res.write(JSON.stringify(responseArray[i]) + ",");
-					}
+					res.write(JSON.stringify(responseToWrite));
 					res.end();
 				}
 
