@@ -116,12 +116,14 @@ app.get("/stats/ranked/:idArray", function(req, res)
 				toReturn.champions = data.champions;
 				responseArray.push(toReturn);
 				//res.write(JSON.stringify(responseArray[responseArray.length-1]) + ',\n\n\n');
+				res.write("{");
 				if(responseArray.length==array.length)
 				{
 					for(var i = 0; i<responseArray.length; i++)
 					{
 						res.write(JSON.stringify(responseArray[i]) + ',\n\n');
 					}
+					res.write("}");
 					res.end();
 				}
 
@@ -207,33 +209,3 @@ var server = app.listen(process.env.PORT || 5000, function () {
   console.log("Example app listening at http://%s:%s", host, port)
 
 })
-
-
-
-
-
-
-
-
-
-// http.createServer(function(req, resp)
-// {
-// 	resp.writeHead(200, {'Content-Type': 'text/plain'});
-//    var result;
-//    request('https://euw.api.pvp.net/api/lol/euw/v1.3/stats/by-summoner/19833633/ranked?season=SEASON2016&api_key=RGAPI-75D59888-2CBE-4ADD-82AA-8774239BAA60', function (error, response, body) {
-//     if (!error && response.statusCode == 200) {
-//     	result = body;
-//     	resp.end(body);
-//         //console.log(body); // Show the HTML for the Modulus homepage.
-//     }
-//     else
-//     {
-//     	result = response.statusCode;
-//     	console.log(response.statusCode);
-//     	console.log(error);
-//     }
-// });
-   
-// }
-// 	).listen(8081);
-// console.log('Server running at http://127.0.0.1:8081/');
