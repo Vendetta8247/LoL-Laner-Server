@@ -116,15 +116,12 @@ app.get("/stats/ranked/:idArray", function(req, res)
 				toReturn.champions = data.champions;
 				responseArray.push(toReturn);
 				//res.write(JSON.stringify(responseArray[responseArray.length-1]) + ',\n\n\n');
-
 				if(responseArray.length==array.length)
 				{
-					res.write("{");
 					for(var i = 0; i<responseArray.length; i++)
 					{
 						res.write(JSON.stringify(responseArray[i]) + ',\n\n');
 					}
-					res.write("}");
 					res.end();
 				}
 
