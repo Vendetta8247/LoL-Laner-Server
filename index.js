@@ -120,7 +120,7 @@ app.get("/stats/ranked/:idArray", function(req, res)
 				{
 					for(var i = 0; i<responseArray.length; i++)
 					{
-						res.write(JSON.stringify(responseArray[i]));
+						res.write(JSON.stringify(responseArray[i]) + ",");
 					}
 					res.end();
 				}
