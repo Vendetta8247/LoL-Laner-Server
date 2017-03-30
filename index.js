@@ -189,6 +189,8 @@ app.get('/summoner/league/entry/:idArray',function (req,res) {
 });
 
 	app.get('/static/version',function (req,res) {
+
+		client.query("select version from version", function (requst, result) {
 		function getStaticVersions()
 		{
 			request('https://global.api.riotgames.com/api/lol/static-data/EUW/v1.2/versions?api_key=' + API_KEY, function(error, response, body)
@@ -204,23 +206,30 @@ app.get('/summoner/league/entry/:idArray',function (req,res) {
 				}
 				else
 				{
+
 					var jsonResponse = JSON.parse(body);
-					console.log(jsonResponse);
 					var versions = new Object();
 					versions.version = jsonResponse[0];
+
+					if(versions.version == result.rows[0].version)
+					{
+					}
+					else
+					{
 					console.log(versions.version);
+						client.query('delete from version');
 					client
 						.query('INSERT INTO version (version) VALUES (\''+ versions.version +'\') ON CONFLICT (version) DO UPDATE SET version = \'' + versions.version +'\';');
+					}
 					res.write(body);
 					res.end();
 				}
-				console.log(error + " HAAHH");
+				console.log(error);
 			});
 		}
 		getStaticVersions();
+		});
 	});
-
-
 });
 
 var server = app.listen(process.env.PORT || 5000, function () {
