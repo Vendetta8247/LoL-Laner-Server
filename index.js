@@ -78,10 +78,6 @@ app.get("/summoner/by-name/:name", function(req, res)
 
 
 });
-
-
-
-
 app.get("/stats/ranked/:idArray", function(req, res)
 {
 	var season =  req.query.season || 'SEASON2017';
@@ -131,7 +127,6 @@ app.get("/stats/ranked/:idArray", function(req, res)
 	}
 
 });
-
 app.get("/summoner/all", function(req,res)
 {
 	client.query("SELECT * from summoners;")
@@ -143,7 +138,6 @@ app.get("/summoner/all", function(req,res)
     });
 
 });
-
 app.get("/current-game/:id", function (req, res)
 {
 	function getCurrentGame()
@@ -169,9 +163,6 @@ app.get("/current-game/:id", function (req, res)
 	}
 	getCurrentGame();
 });
-
-
-
 app.get('/summoner/league/entry/:idArray',function (req,res) {
 	function getLeagueEntry()
 	{
@@ -196,6 +187,38 @@ app.get('/summoner/league/entry/:idArray',function (req,res) {
 	}
 	getLeagueEntry();
 });
+
+	app.get('/static/version',function (req,res) {
+		function getStaticVersions()
+		{
+			request('https://global.api.riotgames.com/api/lol/static-data/EUW/v1.2/versions?api_key=' + API_KEY, function(error, response, body)
+			{
+				if(response.statusCode==429)
+				{
+					console.log("Waiting for 5000 ms in getStaticVersions");
+					setTimeout(function()
+					{
+						console.log("5000 ms passed");
+						getStaticVersions();
+					},5000);
+				}
+				else
+				{
+					var jsonResponse = JSON.parse(body);
+					console.log(jsonResponse);
+					var versions = new Object();
+					versions.version = jsonResponse[0];
+					console.log(versions.version);
+					client
+						.query('INSERT INTO version (version) VALUES (\''+ versions.version +'\') ON CONFLICT (version) DO UPDATE SET version = \'' + versions.version +'\';');
+					res.write(body);
+					res.end();
+				}
+				console.log(error + " HAAHH");
+			});
+		}
+		getStaticVersions();
+	});
 
 
 });
