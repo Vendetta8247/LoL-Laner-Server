@@ -16,7 +16,7 @@ pg.connect(dbUrl, function(err, client) {
       console.log(JSON.stringify(row));
     });
 
-	var cronJob = cron.job("*/3600 * * * * *", function(){
+	var cronJob = cron.job("* * 3 * * *", function(){
 		client.query("select version from version", function (requst, result) {
 
 				request('https://global.api.riotgames.com/api/lol/static-data/EUW/v1.2/versions?api_key=' + API_KEY, function(error, response, body)
