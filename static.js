@@ -11,6 +11,8 @@ pg.connect(dbUrl, function(err, client) {
 
     client.query("select version from version", function (requst, result) {
 
+        console.log("Started task");
+
         request('https://global.api.riotgames.com/api/lol/static-data/EUW/v1.2/versions?api_key=' + API_KEY, function (error, response, body) {
             var jsonResponse = JSON.parse(body);
             var versions = new Object();
@@ -118,4 +120,6 @@ pg.connect(dbUrl, function(err, client) {
 
         }
     });
+
+    console.log("Ended task");
 });
