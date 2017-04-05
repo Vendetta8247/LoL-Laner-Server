@@ -42,7 +42,6 @@ pg.connect(dbUrl, function(err, client) {
 
         //create table champions (id primary key,name text,key text,title text,armor real,armorperlevel real,attackdamage real,attackdamageperlevel real,attackrange real,attackspeedoffset real,attackspeedperlevel real,crit real,critperlevel real,hp real,hpperlevel real,hpregen real,hpregenperlevel real,movespeed real,mp real,mpperlevel real,mpregen real,mpregenperlevel real,spellblock real,spellblockperlevel real,tags text);
 
-        console.info('cron job completed');
 
         function updateChampionInfo() {
 
@@ -103,6 +102,7 @@ pg.connect(dbUrl, function(err, client) {
                             parseFloat(stats.mp) + ", " + parseFloat(stats.mpperlevel) + ", " + parseFloat(stats.mpregen) + ", " + parseFloat(stats.mpregenperlevel) + ", " +
                             parseFloat(stats.spellblock) + ", " + parseFloat(stats.spellblockperlevel) + ", \'" + image.group + "\', \'" + image.full + "\', \'" + tagsString + "\') ON CONFLICT (id) DO UPDATE SET name=\'" + name + "\';");
 
+                    console.log(name);
                 }
             })
         }
