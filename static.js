@@ -9,6 +9,9 @@ pg.connect(dbUrl, function(err, client) {
     if (err) throw err;
 
 
+    function scheduled() {
+
+
     client.query("select version from version", function (requst, result) {
 
         console.log("Started task");
@@ -122,4 +125,6 @@ pg.connect(dbUrl, function(err, client) {
     });
 
     console.log("Ended task");
+    }
+    scheduled();
 });
