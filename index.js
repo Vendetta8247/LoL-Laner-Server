@@ -222,9 +222,8 @@ app.get('/summoner/league/entry/:idArray',function (req,res) {
 				var banRate = general.banRate;
 				var playPercent = general.playPercent;
 				var winPercent = general.winPercent;
-				res.write(key + " " + overallPosition + " " + overallPositionChange + " " + goldEarned  + " " + neutralMinionsKilledEnemyJungle);
+				res.write(JSON.stringify(jsonResponse));
 				res.end();
-
 			})
 		}
 		updateChampionGGInfo();
