@@ -13,11 +13,19 @@ pg.connect(dbUrl, function(err, client) {
                 request('http://api.champion.gg/stats?api_key=' + CHAMPIONGG_API_KEY, function (error, response, body) {
                     var jsonResponse = JSON.parse(body);
 
+                    client.query("DELETE from championgg;");
+
                     for(var i=0; i<jsonResponse.length; i++)
                     {
                         var key = jsonResponse[i].key;
                         var role = jsonResponse[i].role;
                         var name = jsonResponse[i].name;
+                        if (name.includes("\'")) {
+                            name = name.replace("\'", "\'\'");
+                        }
+                        if (key.includes("\'")) {
+                            key = key.replace("\'", "\'\'");
+                        }
 
                         var general = jsonResponse[i].general;
                         var overallPositionChange = general.overallPositionChange;
