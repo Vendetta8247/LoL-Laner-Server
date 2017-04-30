@@ -198,7 +198,7 @@ app.get('/summoner/league/entry/:idArray',function (req,res) {
 	app.get('/static/championgg', function (req, res) {
 		function updateChampionGGInfo()
 		{
-			request('http://api.champion.gg/stats?api_key=9500ef4bb169271b0763c3075be49d85', function (error, response, body) {
+				request('http://api.champion.gg/stats?api_key=9500ef4bb169271b0763c3075be49d85',{gzip: true}, function (error, response, body) {
 				var jsonResponse = JSON.parse(body);
 				var key = jsonResponse[0].key;
 				var role = jsonResponse[0].role;
