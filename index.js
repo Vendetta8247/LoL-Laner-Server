@@ -195,39 +195,15 @@ app.get('/summoner/league/entry/:idArray',function (req,res) {
 
 	});
 
-	app.get('/static/championgg', function (req, res) {
-		function updateChampionGGInfo()
-		{
-				request('http://api.champion.gg/stats?api_key=9500ef4bb169271b0763c3075be49d85',{gzip: true}, function (error, response, body) {
-				var jsonResponse = JSON.parse(body);
-				var key = jsonResponse[0].key;
-				var role = jsonResponse[0].role;
-				var name = jsonResponse[0].name;
+	app.get('/static/summonericons',function (req,res) {
 
-				var general = jsonResponse[0].general;
-				var overallPositionChange = general.overallPositionChange;
-				var overallPosition = general.overallPosition;
-				var goldEarned = general.goldEarned;
-				var neutralMinionsKilledEnemyJungle = general.neutralMinionsKilledEnemyJungle;
-				var neutralMinionsKilledTeamJungle = general.neutralMinionsKilledTeamJungle;
-				var minionsKilled = general.minionsKilled;
-				var largestKillingSpree = general.largestKillingSpree;
-				var totalHeal = general.totalHeal;
-				var totalDamageTaken = general.totalDamageTaken;
-				var totalDamageDealtToChampions = general.totalDamageDealtToChampions;
-				var assists = general.assists;
-				var deaths = general.deaths;
-				var kills = general.kills;
-				var experience = general.experience;
-				var banRate = general.banRate;
-				var playPercent = general.playPercent;
-				var winPercent = general.winPercent;
-				res.write(JSON.stringify(jsonResponse));
-				res.end();
-			})
-		}
-		updateChampionGGInfo();
+		request('https://euw1.api.riotgames.com/lol/static-data/v3/profile-icons?api_key=' + API_KEY, function (error, response, body) {
+				res.write(body);
+			res.end();
+		})
+
 	});
+
 
 	app.get('/static/champions',function (req,res) {
 		var response = new Object();

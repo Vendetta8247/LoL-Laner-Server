@@ -28,11 +28,10 @@ pg.connect(dbUrl, function(err, client) {
             else {
                 console.log(versions.version);
                 updateChampionInfo();
-              //  updateChampionGGInfo();
                 updateItemInfo();
                 updateMasteryInfo();
                 updateRuneInfo();
-                updateSummonerSpellInfo();
+                updateSummonerIcons()
                 client.query('delete from version');
                 client
                     .query('INSERT INTO version (version) VALUES (\'' + versions.version + '\') ON CONFLICT (version) DO UPDATE SET version = \'' + versions.version + '\';');
@@ -109,68 +108,7 @@ pg.connect(dbUrl, function(err, client) {
             })
         }
 
-        function updateChampionGGInfo()
-        {
-            request('http://api.champion.gg/stats?api_key=' + CHAMPIONGG_API_KEY, function (error, response, body) {
-                var jsonResponse = JSON.parse(body);
 
-                for(var i=0; i<jsonResponse.length; i++)
-                {
-                    var key = jsonResponse[i].key;
-                    var role = jsonResponse[i].role;
-                    var name = jsonResponse[i].name;
-
-                    var general = jsonResponse[i].general;
-                    var overallPositionChange = general.overallPositionChange;
-                    var overallPosition = general.overallPosition;
-                    var goldEarned = general.goldEarned;
-                    var neutralMinionsKilledEnemyJungle = general.neutralMinionsKilledEnemyJungle;
-                    var neutralMinionsKilledTeamJungle = general.neutralMinionsKilledTeamJungle;
-                    var minionsKilled = general.minionsKilled;
-                    var largestKillingSpree = general.largestKillingSpree;
-                    var totalHeal = general.totalHeal;
-                    var totalDamageTaken = general.totalDamageTaken;
-                    var totalDamageDealtToChampions = general.totalDamageDealtToChampions;
-                    var assists = general.assists;
-                    var deaths = general.deaths;
-                    var kills = general.kills;
-                    var experience = general.experience;
-                    var banRate = general.banRate;
-                    var playPercent = general.playPercent;
-                    var winPercent = general.winPercent;
-
-                    client
-                        .query("INSERT INTO championgg (" +
-                            "key, " +
-                            "role, " +
-                            "name, " +
-                            "overallPositionChange, " +
-                            "overallPosition, " +
-                            "goldEarned, " +
-                            "neutralMinionsKilledEnemyJungle, " +
-                            "neutralMinionsKilledTeamJungle, " +
-                            "minionsKilled, " +
-                            "largestKillingSpree, " +
-                            "totalHeal, " +
-                            "totalDamageTaken, " +
-                            "totalDamageDealtToChampions, " +
-                            "assists, " +
-                            "deaths, " +
-                            "kills," +
-                            "experience, " +
-                            "banRate, " +
-                            "playPercent, " +
-                            "winPercent " +
-                            ") VALUES (\'" +
-                            key + "\',\'" + role + "\', \'" + name + "\', " + parseInt(overallPositionChange) + ", " + parseInt(overallPosition) + ", " + +parseInt(goldEarned) + ", " + parseFloat(neutralMinionsKilledEnemyJungle) + ", " + parseFloat(neutralMinionsKilledTeamJungle) + ", " + parseFloat(minionsKilled)
-                            + ", " + parseFloat(largestKillingSpree) + ", " + parseInt(totalHeal) + ", " + parseInt(totalDamageTaken) + ", " + parseInt(totalDamageDealtToChampions) + ", " +
-                            parseFloat(assists) + ", " + parseFloat(deaths) + ", " + parseFloat(kills) + ", " + parseFloat(experience) + ", " +
-                            parseFloat(banRate) + ", " + parseFloat(playPercent) + ", " + parseFloat(winPercent) + ") ON CONFLICT (id) DO UPDATE SET name=\'" + name + "\';");
-
-                }
-
-            })
-        }
 
         function updateItemInfo() {
 
@@ -184,8 +122,18 @@ pg.connect(dbUrl, function(err, client) {
 
         }
 
-        function updateSummonerSpellInfo() {
+        function updateSummonerIcons()
+        {
+            client.query("delete from summonericons;")
 
+            request('https://euw1.api.riotgames.com/lol/static-data/v3/profile-icons?api_key=' + API_KEY, function (error, response, body) {
+                var jsonResponse = JSON.parse(body).data;
+                for (var k in jsonResponse) {
+                    //TODO replace this
+                    
+                    console.log("Ended task static champions");
+                }
+            })
         }
 
 
