@@ -27,10 +27,10 @@ app.get("/summoner/by-name/:name", function(req, res)
 		{
 			function getSummonerId()
 			{
-			request('https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/'+req.params.name +'?api_key='+ API_KEY, function (error, response, body) {
+			request('https://euw1.api.riotgames.com/lol/summoner/v3/summoners/by-name/'+req.params.name +'?api_key='+ API_KEY, function (error, response, body) {
 				//res.send(body);
 				var data = JSON.parse(body);
-				var summoner = data[Object.keys(data)[0]];
+				var summoner = JSON.parse(body);
 
 				if (response.statusCode == 429) 
 				{
@@ -49,14 +49,15 @@ app.get("/summoner/by-name/:name", function(req, res)
 					
 					jsonResponse.id = summoner.id;
 					jsonResponse.name = summoner.name;
-					jsonResponse.summonername = Object.keys(data)[0];
+					jsonResponse.profileIconId = summoner.profileIconId;
+					jsonResponse.accountId = summoner.accountId;
 
 					res.send(JSON.stringify(jsonResponse));
 		
   					client
-    				.query('INSERT INTO summoners (name, id, summonername) VALUES (\'' + summoner.name + '\',\'' + parseInt(summoner.id) + '\',\''+ Object.keys(data)[0] + '\') ON CONFLICT (id) DO UPDATE SET name=\''+summoner.name+'\', summonername=\''+Object.keys(data)[0]+'\';');
+    				.query('INSERT INTO summoners (name, id, summonername, icon, accountId) VALUES (\'' + summoner.name + '\',\'' + parseInt(summoner.id) + '\',\''+ summoner.name.toLowerCase().replace(/\s/g,'') + '\',' + summoner.profileIconId + ',\'' + summoner.accountId + '\') ON CONFLICT (id) DO UPDATE SET name=\''+summoner.name+'\', summonername=\''+Object.keys(data)[0]+'\';');
 		
-					console.log('Added ' + Object.keys(data)[0] + ' to database');
+					console.log('Added ' + summoner.name + ' to database');
 				}
 
 				else res.sendStatus(response.statusCode);

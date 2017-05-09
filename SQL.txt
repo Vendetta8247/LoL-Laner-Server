@@ -1,4 +1,4 @@
-create table summoners (id serial primary key, name text, lolid text unique, summonername text);
+﻿create table summoners (id serial primary key, name text, accountId integer, summonername text, icon integer);
 create table champions (id integer primary key,name text,key text,title text,armor real,armorperlevel real,attackdamage real,attackdamageperlevel real,attackrange real,attackspeedoffset real,attackspeedperlevel real,crit real,critperlevel real,hp real,hpperlevel real,hpregen real,hpregenperlevel real,movespeed real,mp real,mpperlevel real,mpregen real,mpregenperlevel real,spellblock real,spellblockperlevel real,imagegroup text,imageurl text,tags text);
 
 create table championgg (
