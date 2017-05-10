@@ -1,5 +1,7 @@
 var request = require('request');
 var express = require('express');
+const StringDecoder = require('string_decoder').StringDecoder;
+const decoder = new StringDecoder('utf8');
 var app = express();
 var pg = require('pg');
 var dbUrl = 'postgres://ghayeuqwyzrpmo:00b2c093f9a39de5414d3a961fe98ba506e009b5fa342dfd3e6a39db58d6e758@ec2-54-75-231-195.eu-west-1.compute.amazonaws.com:5432/d8apki7pn59v74';
@@ -27,12 +29,15 @@ app.get("/summoner/by-name/:name", function(req, res)
 		{
 			function getSummonerId()
 			{
-			request('https://euw1.api.riotgames.com/lol/summoner/v3/summoners/by-name/'+req.params.name +'?api_key='+ API_KEY, function (error, response, body) {
+				console.log("NAME " + req.params.name + " ENCODED " + encodeURIComponent(req.params.name));
+			request({url:'https://euw1.api.riotgames.com/lol/summoner/v3/summoners/by-name/'+encodeURIComponent(req.params.name) +'?api_key='+ API_KEY, encoding:null}, function (error, response, body) {
 				//res.send(body);
-				var data = JSON.parse(body);
-				var summoner = JSON.parse(body);
+				if(error || response.statusCode != 200) console.log("Status code" + response.statusCode);
+				console.log("Body" + body.toString("utf-8"));
+				var data = JSON.parse(body.toString("utf-8"));
+				var summoner = JSON.parse(body.toString("utf-8"));
 
-				if (response.statusCode == 429) 
+				if (response.statusCode == 429)
 				{
 					console.log("Waiting for 5000 ms in getSummonerId");
 					setTimeout(function()
@@ -41,12 +46,12 @@ app.get("/summoner/by-name/:name", function(req, res)
 						getSummonerId();
 					},5000);
 				}
-				
+
 				else if(response.statusCode == 200)
 				{
 
 					var jsonResponse = new Object();
-					
+
 					jsonResponse.id = summoner.id;
 					jsonResponse.name = summoner.name;
 					jsonResponse.accountid = summoner.accountId;
@@ -54,10 +59,10 @@ app.get("/summoner/by-name/:name", function(req, res)
 					jsonResponse.icon = summoner.profileIconId;
 
 					res.send(JSON.stringify(jsonResponse));
-		
+
   					client
     				.query('INSERT INTO summoners (name, id, summonername, icon, accountId) VALUES (\'' + summoner.name + '\',\'' + parseInt(summoner.id) + '\',\''+ summoner.name.toLowerCase().replace(/\s/g,'') + '\',' + summoner.profileIconId + ',\'' + summoner.accountId + '\') ON CONFLICT (id) DO UPDATE SET name=\''+summoner.name+'\', summonername=\''+Object.keys(data)[0]+'\';');
-		
+
 					console.log('Added ' + summoner.name + ' to database');
 				}
 
