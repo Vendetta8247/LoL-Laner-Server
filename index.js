@@ -29,6 +29,7 @@ app.get("/summoner/by-name/:name", function(req, res)
 			{
 			request('https://euw1.api.riotgames.com/lol/summoner/v3/summoners/by-name/'+req.params.name +'?api_key='+ API_KEY, function (error, response, body) {
 				//res.send(body);
+				var data = JSON.parse(body);
 				var summoner = JSON.parse(body);
 
 				if (response.statusCode == 429) 
