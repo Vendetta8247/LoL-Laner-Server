@@ -29,7 +29,6 @@ app.get("/summoner/by-name/:name", function(req, res)
 			{
 			request('https://euw1.api.riotgames.com/lol/summoner/v3/summoners/by-name/'+req.params.name +'?api_key='+ API_KEY, function (error, response, body) {
 				//res.send(body);
-				var data = JSON.parse(body);
 				var summoner = JSON.parse(body);
 
 				if (response.statusCode == 429) 
@@ -49,8 +48,9 @@ app.get("/summoner/by-name/:name", function(req, res)
 					
 					jsonResponse.id = summoner.id;
 					jsonResponse.name = summoner.name;
-					jsonResponse.profileIconId = summoner.profileIconId;
-					jsonResponse.accountId = summoner.accountId;
+					jsonResponse.accountid = summoner.accountId;
+					jsonResponse.summonername = summoner.name.toLowerCase().replace(/\s/g,'');
+					jsonResponse.icon = summoner.profileIconId;
 
 					res.send(JSON.stringify(jsonResponse));
 		
