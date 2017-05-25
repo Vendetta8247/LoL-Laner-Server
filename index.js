@@ -4,7 +4,7 @@ const StringDecoder = require('string_decoder').StringDecoder;
 const decoder = new StringDecoder('utf8');
 var app = express();
 var pg = require('pg');
-var dbUrl = 'postgres://ghayeuqwyzrpmo:00b2c093f9a39de5414d3a961fe98ba506e009b5fa342dfd3e6a39db58d6e758@ec2-54-75-231-195.eu-west-1.compute.amazonaws.com:5432/d8apki7pn59v74';
+var dbUrl = '';
 var API_KEY = '';
 
 pg.defaults.ssl = true;
